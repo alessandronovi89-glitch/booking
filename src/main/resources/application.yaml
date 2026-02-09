@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: booking
+  datasource:
+    url: jdbc:postgresql://localhost:5432/booking
+    username: alessandro
+    password: password
