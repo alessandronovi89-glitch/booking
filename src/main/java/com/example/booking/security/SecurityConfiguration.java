@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ public class SecurityConfiguration {
     SecurityFilterChain configure(HttpSecurity http) {
         //abilita l'autenticazione di base HTTP
         http.httpBasic(Customizer.withDefaults());
+        http.csrf(AbstractHttpConfigurer::disable); //per adesso lo ignoriamo
         //uso l'authenticazione personalizzata (gestisco cosa fare)
         http.authenticationProvider(authenticationProvider);
         http.authorizeHttpRequests(
