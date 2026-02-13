@@ -1,8 +1,11 @@
 package com.example.booking.controller;
 
 import com.example.booking.dto.UserDto;
+import com.example.booking.dto.UserViewDto;
 import com.example.booking.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,13 +29,14 @@ public class BookingController {
     }
 
     @GetMapping("/user-list")
-    public List<UserDto> users() {
+    public List<UserViewDto> users() {
         return userService.getUsers();
     }
 
     @PostMapping("/save-user")
-    public void saveUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<String> saveUser(@Valid @RequestBody  UserDto userDto) {
         userService.saveUser(userDto);
+        return ResponseEntity.ok("User created successfully");
     }
 
 }
