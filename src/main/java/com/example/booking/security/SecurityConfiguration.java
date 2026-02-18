@@ -32,11 +32,12 @@ public class SecurityConfiguration {
         //abilita l'autenticazione di base HTTP
         http.httpBasic(Customizer.withDefaults());
         http.csrf(AbstractHttpConfigurer::disable); //per adesso lo ignoriamo
+        http.formLogin(flc->flc.disable()); //disabilitiamo il form login di default
         //uso l'authenticazione personalizzata (gestisco cosa fare)
         http.authenticationProvider(authenticationProvider);
         http.authorizeHttpRequests(
                 //TODO info public endpoint
-                c -> c.requestMatchers("/info").permitAll()
+                c -> c.requestMatchers("/info", "/error").permitAll()
                         .anyRequest().authenticated() //permitAll..
         );
 
