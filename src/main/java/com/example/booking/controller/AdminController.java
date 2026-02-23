@@ -16,11 +16,6 @@ import java.util.List;
 public class AdminController {
     private final UserService userService;
 
-    @GetMapping("/info")
-    public String infoProject() {
-        return "This is a booking security project, welcome!";
-    }
-
     @GetMapping("/user-list")
     public List<UserViewDto> users() {
         return userService.getUsers();

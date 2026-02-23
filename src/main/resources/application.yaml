@@ -13,6 +13,11 @@ spring:
     show-sql: ${JPA_SHOW_SQL:false}
     hibernate.format_sql: ${HIBERNATE_FORMAT_SQL:false}
 
+server:
+  servlet:
+    session:
+      timeout: 30s
+
 logging:
   level:
     root: ${SPRING_LOG_LEVEL:info}

@@ -1,8 +1,11 @@
 package com.example.booking.security;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,13 +17,19 @@ public class SecurityConfiguration {
 
     private final CustomAuthenticationProvider authenticationProvider;
 
+    @Autowired
+    private Environment environment;
+
+
     @Bean
     SecurityFilterChain configure(HttpSecurity http) {
-        //abilita l'autenticazione di base HTTP
-        http.httpBasic(Customizer.withDefaults());
+        if (environment.acceptsProfiles(Profiles.of("prod"))) {
+            http.redirectToHttps(Customizer.withDefaults());
+        }
+        http.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(10)); //gestione sessione
         http.csrf(AbstractHttpConfigurer::disable); //per adesso lo ignoriamo
-        http.formLogin(flc->flc.disable()); //disabilitiamo il form login di default
-        //uso l'authenticazione personalizzata (gestisco cosa fare)
+        http.httpBasic(Customizer.withDefaults());
+        http.formLogin(form -> form.defaultSuccessUrl("/username", true));
         http.authenticationProvider(authenticationProvider);
         http.authorizeHttpRequests(
                 c ->
@@ -34,5 +43,15 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-
+    /*
+    @Bean
+    public ServletListenerRegistrationBean<HttpSessionListener> sessionListener() {
+        return new ServletListenerRegistrationBean<>(new HttpSessionListener() {
+            @Override
+            public void sessionCreated(HttpSessionEvent se) {
+                System.out.println("Timeout reale: " + se.getSession().getMaxInactiveInterval() + " sec");
+            }
+        });
+    }
+    */
 }
