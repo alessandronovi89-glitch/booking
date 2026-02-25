@@ -1,5 +1,6 @@
 package com.example.booking.security;
 
+import com.example.booking.security.filter.CsrfCookieFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -8,8 +9,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 @AllArgsConstructor
@@ -26,9 +30,14 @@ public class SecurityConfiguration {
         if (environment.acceptsProfiles(Profiles.of("prod"))) {
             http.redirectToHttps(Customizer.withDefaults());
         }
-        http.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(10)); //gestione sessione
-        http.csrf(AbstractHttpConfigurer::disable); //per adesso lo ignoriamo
+        //http.securityContext(contextConfig->contextConfig.requireExplicitSave(false));
+        http.sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                .invalidSessionUrl("/invalidSession").maximumSessions(10)); //gestione sessione
+        CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+        http.csrf(crsfConfig -> crsfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())); //ignoringRequestMatchers("/booking/**")...
         http.httpBasic(Customizer.withDefaults());
+        http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
         http.formLogin(form -> form.defaultSuccessUrl("/username", true));
         http.authenticationProvider(authenticationProvider);
         http.authorizeHttpRequests(
