@@ -22,3 +22,5 @@ logging:
   level:
     root: ${SPRING_LOG_LEVEL:info}
     org.springframework.security: ${SPRING_SECURITY_LOG_LEVEL:info}
+  file:
+    name: logs/booking.log

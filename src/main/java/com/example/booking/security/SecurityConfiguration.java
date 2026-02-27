@@ -1,6 +1,7 @@
 package com.example.booking.security;
 
 import com.example.booking.security.filter.CsrfCookieFilter;
+import com.example.booking.security.filter.LoggingFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +39,7 @@ public class SecurityConfiguration {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())); //ignoringRequestMatchers("/booking/**")...
         http.httpBasic(Customizer.withDefaults());
         http.addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
+        http.addFilterAfter(new LoggingFilter(), CsrfCookieFilter.class);
         http.formLogin(form -> form.defaultSuccessUrl("/username", true));
         http.authenticationProvider(authenticationProvider);
         http.authorizeHttpRequests(
