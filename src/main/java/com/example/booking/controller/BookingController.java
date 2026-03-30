@@ -1,12 +1,12 @@
 package com.example.booking.controller;
 
+import com.example.booking.dto.LoginRequest;
+import com.example.booking.dto.LoginResponse;
+import com.example.booking.security.AuthenticationJwtService;
 import com.example.booking.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/booking")
 public class BookingController {
     private final UserService userService;
+    private final AuthenticationJwtService authenticationJwtService;
 
     @GetMapping("/view-rooms")
     public ResponseEntity<String> getRooms() {
@@ -26,10 +27,12 @@ public class BookingController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login() {
-        //TODO : implement login logic (loginDto (username, password) -> authenticate -> generate token)
-        //rimozione del filtro JwtTokenGenerator
-        return ResponseEntity.ok("login successful");
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+        return ResponseEntity.ok(
+                authenticationJwtService.loginAuthentication(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword())
+        );
     }
 
 }
