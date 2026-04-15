@@ -26,6 +26,21 @@ public class BookingController {
         return "Room added successfully";
     }
 
+    @PostMapping("/delete-room")
+    public String deleteRoom() {
+        return "Room added successfully";
+    }
+
+    @PostMapping("/book-room")
+    public String bookRoom() {
+        return "Room booked successfully";
+    }
+
+    @PostMapping("/delete-booking")
+    public String deleteBooking() {
+        return "Room booked deleted successfully";
+    }
+
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(
