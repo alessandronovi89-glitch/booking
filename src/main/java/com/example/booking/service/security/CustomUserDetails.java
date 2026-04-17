@@ -49,4 +49,9 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true; // account attivo
     }
+
+    public Long getId() {
+        return user.getId();
+    }
+
 }

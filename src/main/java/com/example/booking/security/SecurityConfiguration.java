@@ -34,10 +34,10 @@ public class SecurityConfiguration {
         http.addFilterBefore(tokenValidatorFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests(
                 c ->
-                        c.requestMatchers("/info", "/error", "/booking/login").permitAll()
-                                .requestMatchers("/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/user/**").hasRole("USER")
-                                .requestMatchers("/booking/**").hasRole("HOTEL_OWNER") //a parte booking/login
+                        c.requestMatchers("/info", "/error", "/auth/login").permitAll()
+                                .requestMatchers("/user/**").hasRole("ADMIN") //vedere lista utenti e aggiungere, togliere ..
+                                .requestMatchers("/room/**").hasRole("HOTEL_OWNER") //aggiungere togliere stanza ..
+                                .requestMatchers("/booking/**").hasRole("USER")
                                 .anyRequest().authenticated()
         );
         return http.build();

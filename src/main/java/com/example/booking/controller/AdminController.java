@@ -12,19 +12,25 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/admin")
+@RequestMapping("/user")
 public class AdminController {
     private final UserService userService;
 
-    @GetMapping("/user-list")
+    @GetMapping("/list")
     public List<UserViewDto> users() {
         return userService.getUsers();
     }
 
-    @PostMapping("/save-user")
+    @PostMapping("/save")
     public ResponseEntity<String> saveUser(@Valid @RequestBody UserDto userDto) {
         userService.saveUser(userDto);
         return ResponseEntity.ok("User created successfully");
+    }
+
+    @PostMapping("/delete/{userId}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+        userService.deleteUser(userId);
+        return ResponseEntity.ok("User deleted successfully");
     }
 
 }

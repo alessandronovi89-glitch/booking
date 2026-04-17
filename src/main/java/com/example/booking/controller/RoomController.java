@@ -2,43 +2,38 @@ package com.example.booking.controller;
 
 import com.example.booking.dto.LoginRequest;
 import com.example.booking.dto.LoginResponse;
+import com.example.booking.dto.RoomDto;
 import com.example.booking.security.AuthenticationJwtService;
-import com.example.booking.service.UserService;
+import com.example.booking.service.RoomService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/booking")
-public class BookingController {
-    private final UserService userService;
+@RequestMapping("/room")
+public class RoomController {
+    private final RoomService roomService;
     private final AuthenticationJwtService authenticationJwtService;
 
-    @GetMapping("/view-rooms")
+    @GetMapping("/view")
     public ResponseEntity<String> getRooms() {
         return ResponseEntity.ok("No rooms present");
     }
 
-    @PostMapping("/add-room")
-    public String addRoom() {
-        return "Room added successfully";
+    @PostMapping("/add")
+    public ResponseEntity<String> addRoom(@RequestBody RoomDto roomDto) {
+        roomService.addRoom(roomDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Room added successfully");
     }
 
-    @PostMapping("/delete-room")
-    public String deleteRoom() {
-        return "Room added successfully";
-    }
 
-    @PostMapping("/book-room")
-    public String bookRoom() {
-        return "Room booked successfully";
-    }
-
-    @PostMapping("/delete-booking")
-    public String deleteBooking() {
-        return "Room booked deleted successfully";
+    @PostMapping("/delete/{roomId}")
+    public ResponseEntity<String> deleteRoom(@PathVariable Long roomId) {
+        roomService.deleteRoom(roomId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Room deleted successfully");
     }
 
     @PostMapping("/login")
