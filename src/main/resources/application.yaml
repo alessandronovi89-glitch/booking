@@ -27,4 +27,4 @@ logging:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration-minutes: ${JWT_EXPIRATION_MINUTES:5}
+  expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}

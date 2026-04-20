@@ -4,6 +4,7 @@ import com.auth0.jwt.RegisteredClaims;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.example.booking.security.AuthenticationJwtService;
+import com.example.booking.service.security.UserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,19 +29,34 @@ import java.util.Optional;
 public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
     private final AuthenticationJwtService jwtUtil;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            Map<String, Claim> claims = jwtUtil.validateToken(getJwtToken(request));
+            String jwtToken = getJwtToken(request);
+            if (jwtToken == null) { //senza token è anonymous, se l'endpoint è protetto l’authorization lo rifiuterà
+                filterChain.doFilter(request, response);
+                return;
+            }
+            Map<String, Claim> claims = jwtUtil.validateToken(jwtToken);
             if (claims != null) {
                 String username = claims.get(RegisteredClaims.SUBJECT).asString();
                 String[] authorities = claims.get("authorities").asArray(String.class);
                 //TODO capire sintassi lambda per map sottostante
                 //quando facciamo new UsernamePasswordAuthenticationToken abbiamo authenticated a true
+                // Usiamo CustomUserDetails come principal dell'Authentication
+                // così Spring Security può iniettarlo con @AuthenticationPrincipal
+                // nei controller, evitando di avere solo lo username come String.
                 Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(username, null,
+                        new UsernamePasswordAuthenticationToken(
+                                userDetailsService.loadUserByUsername(username),
+                                null,
                                 Arrays.stream(authorities).map(a -> (GrantedAuthority) () -> a).toList());
+                //è qui che dico a spring security che l'utente è autenticato,
+                //-> poi controlla sull'AuthorizationFilter se è autorizzato altrimenti da eccezione
+                // chiamando prima SecurityContextHolderFilter che fa delle cose..
+                // -> SecurityContext viene preparato/caricato prima, poi AuthorizationFilter legge l’Authentication e decide se la request è autorizzata.
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (TokenExpiredException e) {
@@ -66,8 +82,11 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
                 .orElse(null);
     }
 
+    /*
+    potrei disattivare il filtro, ma lascio passare se il token è nullo, se l'endpoint è protetto fallira l'autenticazione
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return request.getRequestURI().equals("/booking/login");
-    }
+        return List.of("/info/login", "/info").contains(request.getRequestURI());
+
+    }*/
 }

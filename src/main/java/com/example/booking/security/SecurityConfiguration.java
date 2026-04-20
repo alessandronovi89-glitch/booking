@@ -13,6 +13,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @AllArgsConstructor
@@ -32,14 +37,35 @@ public class SecurityConfiguration {
         http.sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.csrf(AbstractHttpConfigurer::disable);
         http.addFilterBefore(tokenValidatorFilter, UsernamePasswordAuthenticationFilter.class);
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeHttpRequests(
                 c ->
                         c.requestMatchers("/info", "/error", "/auth/login").permitAll()
+                                // prima la più specifica
+                                .requestMatchers("/room/view/**").hasAnyRole("USER", "HOTEL_OWNER")
+                                // poi la più generale
                                 .requestMatchers("/user/**").hasRole("ADMIN") //vedere lista utenti e aggiungere, togliere ..
                                 .requestMatchers("/room/**").hasRole("HOTEL_OWNER") //aggiungere togliere stanza ..
                                 .requestMatchers("/booking/**").hasRole("USER")
                                 .anyRequest().authenticated()
         );
         return http.build();
+    }
+
+    //(va bene per develop)
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOriginPatterns(List.of("*")); // tutti gli origin
+        config.setAllowedMethods(List.of("*"));        // GET, POST, ecc.
+        config.setAllowedHeaders(List.of("*"));        // tutti gli header
+        config.setAllowCredentials(false);             // true solo se usi cookie/sessioni (niente cookie, niente sessoini..)
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 }

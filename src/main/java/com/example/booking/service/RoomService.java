@@ -6,6 +6,8 @@ import com.example.booking.repository.RoomRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class RoomService {
@@ -18,5 +20,10 @@ public class RoomService {
 
     public void deleteRoom(Long idRoom) {
         roomRepository.deleteById(idRoom);
+    }
+
+    public List<RoomDto> viewRooms() {
+        return roomRepository.findAll().stream()
+                .map(dtoMapping::roomDtoFromRoom).toList();
     }
 }

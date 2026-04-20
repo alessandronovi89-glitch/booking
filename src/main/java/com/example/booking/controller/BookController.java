@@ -1,6 +1,7 @@
 package com.example.booking.controller;
 
 import com.example.booking.dto.BookingRequest;
+import com.example.booking.dto.RangesBookedRoom;
 import com.example.booking.service.BookService;
 import com.example.booking.service.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,15 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/booking")
 public class BookController {
     private final BookService bookService;
+
+    //hm questo va bene per fare i calcoli..
+    //ma in realtà servirebbe lista di prenotazione dell'utente
+    // -> modificare.. show reservation di tutte le stanza ma di uno specifico utente..
+    //TODO da fare..
+    @GetMapping
+    public RangesBookedRoom showReservations(@RequestParam Long roomId) {
+        return bookService.showReservations(roomId);
+    }
 
     @PostMapping("/room")
     public ResponseEntity<String> bookRoom(@RequestBody BookingRequest bookingRequest,

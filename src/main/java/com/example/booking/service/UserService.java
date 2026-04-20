@@ -36,7 +36,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-    //"todo https..un po' dappertutto..."
     private void checkCompromisedPassword(UserDto userDto) {
         if(compromisedPasswordChecker.check(userDto.getPassword()).isCompromised()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is compromised, choose another one");

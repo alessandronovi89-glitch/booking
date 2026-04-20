@@ -1,6 +1,7 @@
 package com.example.booking.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,6 @@ public class RoomDto {
     @NotEmpty
     private String description;
     @NotEmpty
-    //TODO > 0
+    @Positive
     private BigDecimal pricePerNight;
 }

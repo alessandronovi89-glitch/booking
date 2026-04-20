@@ -27,7 +27,8 @@ public class AdminController {
         return ResponseEntity.ok("User created successfully");
     }
 
-    @PostMapping("/delete/{userId}")
+    //credo che sarebbe meglio una cancellazione logica (lo faremo magari in un secondo momento con il campo isActive)
+    @DeleteMapping("/delete/{userId}")
     public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.ok("User deleted successfully");

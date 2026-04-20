@@ -21,6 +21,8 @@ public interface DtoMapping {
 
     UserViewDto userViewDtoFromUser(User user);
 
-    Room roomDtoToRoom(RoomDto user);
+    Room roomDtoToRoom(RoomDto roomDto);
+
+    RoomDto roomDtoFromRoom(Room room);
 
 }
