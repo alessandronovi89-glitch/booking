@@ -25,6 +25,8 @@ public class UserService {
     private final CompromisedPasswordChecker compromisedPasswordChecker;
 
     public List<UserViewDto> getUsers(){
+        //Todo; per esercizio potresti usare la paginazione (se hai molti utenti per esempio)
+        //nelle query dove ci sono tanti dati.. non è realistico qui, serve la paginazione..
         List<User> users = userRepository.findAll();
         return users.stream().map(dtoMapping::userViewDtoFromUser).toList();
     }

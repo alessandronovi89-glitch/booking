@@ -1,6 +1,7 @@
 package com.example.booking.repository;
 
 import com.example.booking.db.Booking;
+import com.example.booking.model.BookingSummary;
 import com.example.booking.model.enums.BookingStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,4 +32,41 @@ public interface BookRepository extends JpaRepository<Booking, Long> {
     }
 
     List<Booking> findAllByRoomIdAndStatus(Long roomId, BookingStatus bookingStatus);
+
+    //TODO rivedi un po' spring data x favore..:
+    //AND b.checkOut >= :now() -> NO!,
+    //stai usando JPL, non SQL, quindi non puoi usare funzioni di database come now(), devi passare la data attuale come parametro
+    //->stai lavorando a livello ORM
+    //constructor expression (DTO classico)
+    @Query("""
+            SELECT new com.example.booking.model.BookingSummary(
+                r.id, r.name, r.description,
+                b.checkIn, b.checkOut, b.totalPrice, b.status)
+            FROM Booking b 
+            INNER JOIN b.room r
+            WHERE b.user.id = :userId
+            AND b.checkOut >= :today
+            ORDER BY b.checkIn
+            """)
+    List<BookingSummary> findAllActualBookingByUser(
+            @Param("userId") Long userId,
+            @Param("today") LocalDate today
+    );
+
+    @Query("""
+            SELECT new com.example.booking.model.BookingSummary(
+                r.id, r.name, r.description,
+                b.checkIn, b.checkOut, b.totalPrice, b.status)
+            FROM Booking b 
+            INNER JOIN b.room r
+            WHERE b.user.id = :userId
+            AND b.checkOut <:today
+            ORDER BY b.checkIn
+            """)
+    List<BookingSummary> findOldBookingByUser(
+            @Param("userId") Long userId,
+            @Param("today") LocalDate today
+    );
+
+
 }

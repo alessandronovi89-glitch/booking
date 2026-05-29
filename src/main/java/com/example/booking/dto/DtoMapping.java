@@ -2,6 +2,7 @@ package com.example.booking.dto;
 
 import com.example.booking.db.Room;
 import com.example.booking.db.User;
+import com.example.booking.model.BookingSummary;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,5 +25,7 @@ public interface DtoMapping {
     Room roomDtoToRoom(RoomDto roomDto);
 
     RoomDto roomDtoFromRoom(Room room);
+
+    RoomBookingDto roomBookingDtoFromSummaryBooking(BookingSummary bookingSummary);
 
 }

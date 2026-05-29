@@ -2,6 +2,7 @@ package com.example.booking.controller;
 
 import com.example.booking.dto.BookingRequest;
 import com.example.booking.dto.RangesBookedRoom;
+import com.example.booking.dto.RoomBookingByStatusDto;
 import com.example.booking.service.BookService;
 import com.example.booking.service.security.CustomUserDetails;
 import lombok.AllArgsConstructor;
@@ -16,14 +17,23 @@ import org.springframework.web.bind.annotation.*;
 public class BookController {
     private final BookService bookService;
 
-    //hm questo va bene per fare i calcoli..
-    //ma in realtà servirebbe lista di prenotazione dell'utente
-    // -> modificare.. show reservation di tutte le stanza ma di uno specifico utente..
-    //TODO da fare..
+    //queste date servono per capire quando una stanza è già occupata -> x calcolare quando la stanza può essere libera per una prenotazione
     @GetMapping
-    public RangesBookedRoom showReservations(@RequestParam Long roomId) {
-        return bookService.showReservations(roomId);
+    public RangesBookedRoom showReservationsByRoom(@RequestParam Long roomId) {
+        return bookService.showReservationsByRoom(roomId);
     }
+
+    @GetMapping("/my-reservations")
+    public RoomBookingByStatusDto showMyReservations(@AuthenticationPrincipal CustomUserDetails user) {
+        return bookService.showMyReservations(user.getId());
+    }
+
+    @GetMapping("/my-old-reservations")
+    public RoomBookingByStatusDto showMyOldReservations(@AuthenticationPrincipal CustomUserDetails user) {
+        return bookService.showMyOldReservations(user.getId());
+    }
+
+    //TODO myOldReservations
 
     @PostMapping("/room")
     public ResponseEntity<String> bookRoom(@RequestBody BookingRequest bookingRequest,
