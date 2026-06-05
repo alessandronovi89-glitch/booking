@@ -33,7 +33,6 @@ public class BookController {
         return bookService.showMyOldReservations(user.getId());
     }
 
-    //TODO myOldReservations
 
     @PostMapping("/room")
     public ResponseEntity<String> bookRoom(@RequestBody BookingRequest bookingRequest,
