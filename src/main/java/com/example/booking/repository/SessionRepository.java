@@ -10,5 +10,5 @@ import java.util.UUID;
 
 @Repository
 public interface SessionRepository extends JpaRepository<Session, UUID> {
-    Optional<Session> findByRefreshTokenHash(UUID uuid);
+    Optional<Session> findByRefreshTokenHash(String tokenHashed);
 }

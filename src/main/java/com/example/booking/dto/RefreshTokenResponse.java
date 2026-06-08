@@ -8,9 +8,9 @@ import lombok.Setter;
 @Builder
 @Getter
 @Setter
-public class LoginResponse {
+public class RefreshTokenResponse {
     private String message;
     private String jwtToken;
-    @JsonIgnore //TODO ("rivedere jackson")
+    @JsonIgnore
     private String refreshToken;
 }

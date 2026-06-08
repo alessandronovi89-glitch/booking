@@ -11,7 +11,18 @@ E' stato fatto per studiare spring security. Implementa attualmente un jwt token
 
 
 
-------------------
+-----------------
+Mancherebbe:
+-spring data (pages)
+-gestione concorrenza
+-unit tests
+-eventi distribuiti
+-mfa
+-gestione fuso orario
+-https
+-risk engine
+
+
 Spring:
 
 -Spring Core
