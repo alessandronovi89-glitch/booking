@@ -1,7 +1,7 @@
 package com.example.booking.controller;
 
 import com.example.booking.dto.RoomDto;
-import com.example.booking.security.AuthenticationJwtService;
+import com.example.booking.security.AuthService;
 import com.example.booking.service.RoomService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/room")
 public class RoomController {
     private final RoomService roomService;
-    private final AuthenticationJwtService authenticationJwtService;
+    private final AuthService authService;
 
     @GetMapping("/view")
     public List<RoomDto> getRooms() {

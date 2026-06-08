@@ -3,25 +3,50 @@ package com.example.booking.security;
 import com.example.booking.configuration.TokenProperties;
 import com.example.booking.db.Session;
 import com.example.booking.db.User;
+import com.example.booking.dto.LoginResponse;
 import com.example.booking.dto.RefreshTokenResponse;
 import com.example.booking.repository.SessionRepository;
+import com.example.booking.repository.UserRepository;
+import com.example.booking.service.security.CustomUserDetails;
 import com.google.common.hash.Hashing;
 import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Component
+@Service
 @AllArgsConstructor
-public class SessionService {
-    private final SessionRepository sessionRepository;
-    private final TokenProperties tokenProperties;
+public class AuthService {
 
-    public UUID generateSession(User user, HttpServletRequest request) {
+    private final TokenProperties tokenProperties;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SessionRepository sessionRepository;
+    private final JwtService jwtService;
+
+    public LoginResponse loginAuthentication(String username, String password, HttpServletRequest request) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        String jwtToken = jwtService.generateToken(new CustomUserDetails(user));
+        UUID refreshToken = generateSession(user, request);
+        return LoginResponse.builder()
+                .jwtToken(jwtToken)
+                .message("welcome to booking project, " + user.getUsername())
+                .refreshToken(refreshToken.toString()).build();
+    }
+
+
+    private UUID generateSession(User user, HttpServletRequest request) {
         UUID refreshToken = UUID.randomUUID();
         Session session = new Session();
         session.setUser(user);
@@ -61,12 +86,12 @@ public class SessionService {
         session.setExpiresAt(LocalDateTime.now().plusDays(tokenProperties.getRefreshTokenExpirationDays()));
         //session.setUpdate -> facoltativo, solo se vuoi fare tracking
         sessionRepository.save(session);
-        //String jwtToken = generateToken(new CustomUserDetails(user));
+        String jwtToken = jwtService.generateToken(new CustomUserDetails(session.getUser()));
         return RefreshTokenResponse.builder()
-                .jwtToken("123") //TODO
+                .jwtToken(jwtToken)
                 .message("token refreshed successfully")
                 .refreshToken(refreshToken.toString()).build();
-
-
     }
+
+
 }

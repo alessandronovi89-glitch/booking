@@ -3,7 +3,7 @@ package com.example.booking.security.filter;
 import com.auth0.jwt.RegisteredClaims;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
-import com.example.booking.security.AuthenticationJwtService;
+import com.example.booking.security.JwtService;
 import com.example.booking.service.security.UserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,7 +28,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
-    private final AuthenticationJwtService jwtUtil;
+    private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
     @Override
@@ -39,7 +39,7 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
-            Map<String, Claim> claims = jwtUtil.validateToken(jwtToken);
+            Map<String, Claim> claims = jwtService.validateToken(jwtToken);
             if (claims != null) {
                 String username = claims.get(RegisteredClaims.SUBJECT).asString();
                 String[] authorities = claims.get("authorities").asArray(String.class);

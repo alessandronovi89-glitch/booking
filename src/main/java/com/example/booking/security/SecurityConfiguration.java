@@ -40,7 +40,7 @@ public class SecurityConfiguration {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeHttpRequests(
                 c ->
-                        c.requestMatchers("/info", "/error", "/auth/login").permitAll()
+                        c.requestMatchers("/info", "/error", "/auth/login", "/auth/refresh-token").permitAll()
                                 // prima la più specifica
                                 .requestMatchers("/room/view/**").hasAnyRole("USER", "HOTEL_OWNER")
                                 // poi la più generale
