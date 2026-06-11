@@ -35,6 +35,8 @@ public class SecurityConfiguration {
             http.redirectToHttps(Customizer.withDefaults());
         }
         http.sessionManagement(smc -> smc.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        //TODO -> adesso non va più bene, con il refresh token no, abbiamo un cookie
+        //dobbiamo implementare il CSRF token quindi -> ma solo per certi endpoint (refresh e logout) non serve per tutti
         http.csrf(AbstractHttpConfigurer::disable);
         http.addFilterBefore(tokenValidatorFilter, UsernamePasswordAuthenticationFilter.class);
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
